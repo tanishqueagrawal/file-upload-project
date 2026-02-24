@@ -6,7 +6,7 @@ import psycopg2
 
 app = Flask(__name__)
 
-# Cloudinary configuration (reads from CLOUDINARY_URL env variable)
+# Configure Cloudinary (uses CLOUDINARY_URL from Render)
 cloudinary.config(secure=True)
 
 # Database connection
@@ -14,6 +14,22 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
+
+# Automatically create table if not exists
+def create_table():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS files (
+            id SERIAL PRIMARY KEY,
+            file_url TEXT NOT NULL
+        );
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+create_table()
 
 
 @app.route("/")
@@ -42,7 +58,7 @@ def upload_file():
         result = cloudinary.uploader.upload(file)
         file_url = result["secure_url"]
 
-        # Save URL to PostgreSQL
+        # Save URL in PostgreSQL
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("INSERT INTO files (file_url) VALUES (%s);", (file_url,))
@@ -55,9 +71,4 @@ def upload_file():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-    return "Invalid file type"
-
-
-if __name__ == "__main__":
-
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    
