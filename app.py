@@ -60,7 +60,10 @@ def upload_file():
 
     if file:
         # Upload to Cloudinary
-        result = cloudinary.uploader.upload(file)
+        result = cloudinary.uploader.upload(
+    file,
+    upload_preset="my_unsigned_upload"
+)
         file_url = result["secure_url"]
 
         # Save URL in PostgreSQL
@@ -77,4 +80,5 @@ def upload_file():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
     
+
 
