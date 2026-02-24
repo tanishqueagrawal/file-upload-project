@@ -9,8 +9,6 @@ app = Flask(__name__)
 # Configure Cloudinary (uses CLOUDINARY_URL from Render)
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
     secure=True
 )
 
@@ -80,5 +78,6 @@ def upload_file():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
     
+
 
 
