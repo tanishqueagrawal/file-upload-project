@@ -10,6 +10,7 @@ app = Flask(__name__)
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
     api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
     secure=True
 )
 
@@ -59,10 +60,7 @@ def upload_file():
 
     if file:
         # Upload to Cloudinary
-        result = cloudinary.uploader.upload(
-    file,
-    upload_preset="my_unsigned_upload"
-)
+        result = cloudinary.uploader.upload(file)
         file_url = result["secure_url"]
 
         # Save URL in PostgreSQL
@@ -79,6 +77,7 @@ def upload_file():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
     
+
 
 
 
